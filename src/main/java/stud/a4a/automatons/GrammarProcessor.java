@@ -125,4 +125,79 @@ public class GrammarProcessor {
 
         rules.add(rule);
     }
+
+    // Метод для определения типа грамматики
+    public String determineGrammarType() {
+        if (rules.isEmpty()) {
+            return "Грамматика не содержит правил.";
+        }
+
+        boolean isRegular = true;
+        boolean isContextFree = true;
+        boolean isContextSensitive = true;
+
+        for (Rule rule : rules) {
+            String leftSide = rule.getNonTerminal();
+            List<String> rightSides = rule.getProductions();
+
+            // Проверка на регулярную грамматику (тип 3)
+            for (String rightSide : rightSides) {
+                if (rightSide.isEmpty()) {
+                    // Пустая строка допустима в регулярной грамматике (например, S -> ε)
+                    continue;
+                }
+                if (rightSide.length() > 2 || (rightSide.length() == 2 && !isTerminal(String.valueOf(rightSide.charAt(1))))) {
+                    isRegular = false;
+                }
+            }
+
+            // Проверка на контекстно-свободную грамматику (тип 2)
+            if (leftSide.length() != 1 || !Character.isUpperCase(leftSide.charAt(0))) {
+                isContextFree = false;
+            }
+
+            // Проверка на контекстно-зависимую грамматику (тип 1)
+            for (String rightSide : rightSides) {
+                if (rightSide.isEmpty()) {
+                    // Пустая строка допустима только если левая часть состоит из одного символа
+                    if (leftSide.length() != 1) {
+                        isContextSensitive = false;
+                    }
+                } else if (leftSide.length() > rightSide.length()) {
+                    isContextSensitive = false;
+                }
+            }
+        }
+
+        if (isRegular) {
+            return "Регулярная грамматика (тип 3)";
+        } else if (isContextFree) {
+            return "Контекстно-свободная грамматика (тип 2)";
+        } else if (isContextSensitive) {
+            return "Контекстно-зависимая грамматика (тип 1)";
+        } else {
+            return "Грамматика общего вида (тип 0)";
+        }
+    }
+
+    // Метод для описания языка, порождаемого грамматикой
+    public String describeLanguage() {
+        String grammarType = determineGrammarType();
+        StringBuilder description = new StringBuilder();
+
+        description.append("Тип грамматики: ").append(grammarType).append("\n");
+
+        // Пример описания языка
+        if (grammarType.contains("Регулярная")) {
+            description.append("Язык состоит из цепочек, которые могут быть распознаны конечным автоматом.\n");
+        } else if (grammarType.contains("Контекстно-свободная")) {
+            description.append("Язык состоит из цепочек, которые могут быть распознаны стековым автоматом.\n");
+        } else if (grammarType.contains("Контекстно-зависимая")) {
+            description.append("Язык состоит из цепочек, которые могут быть распознаны линейно-ограниченным автоматом.\n");
+        } else {
+            description.append("Язык состоит из цепочек, которые могут быть распознаны машиной Тьюринга.\n");
+        }
+
+        return description.toString();
+    }
 }

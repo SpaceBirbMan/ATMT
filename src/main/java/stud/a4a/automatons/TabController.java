@@ -1,6 +1,5 @@
 package stud.a4a.automatons;
 
-import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
 public abstract class TabController {

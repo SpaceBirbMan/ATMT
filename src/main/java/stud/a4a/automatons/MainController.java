@@ -17,5 +17,6 @@ public class MainController {
     @FXML
     public void initialize() {
         new Tab1Controller(tab1);
+        new Tab2Controller(tab2);
     }
 }
